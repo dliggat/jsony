@@ -1,0 +1,9 @@
+html, body {
+  marigin: 0;
+  padding: 0;
+}
+
+body {
+  min-width: 320px;
+  background-color: #EEE;
+}
