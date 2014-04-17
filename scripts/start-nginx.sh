@@ -11,4 +11,9 @@ if [ "$1" ]; then
   port="$1"
 fi
 
-docker run -p $port:80 -d -v $projectdir:$vmdir:ro soconnor/jsony
+containerid=`docker ps | grep soconnor/jsony | awk '{ print $1 }'`
+if [ -z "$containerid" ]; then
+  docker run -p $port:80 -d -v $projectdir:$vmdir:ro soconnor/jsony
+else
+  echo "Already started"
+fi

@@ -1,0 +1,28 @@
+{
+  "name": "jsony",
+  "version": "0.0.1",
+  "authors": [
+    "Séamus O'Connor <seamus.oconnor@pneumaticweb.com>",
+    "dave Liggat <dliggat@gmail.com>"
+  ],
+  "description": "Spreadsheet Web Application",
+  "main": "app.html",
+  "keywords": [
+    "spreadsheet"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "almond": "~0.2.9",
+    "requirejs": "~2.1.11",
+    "rsvp": "~3.0.6"
+  }
+}
