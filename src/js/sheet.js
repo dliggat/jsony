@@ -58,6 +58,9 @@ define(function(require) {
       }
     };
 
+    var selected = [1,1];
+    var selectedEl = utils.createElement('div', { 'class': 'selected' });
+
     var styleEl = createStyleSheet(this.id, numCols, labels.cols.width);
     styleEl.id = 'spreadsheet-rules-' + this.id;
 
@@ -114,6 +117,10 @@ define(function(require) {
     for(var j = 1; j <= numRows; j++) {
       this.el.appendChild(createRow(j));
     }
+
+    var cell = this.el.querySelector('.cell.row-1.col-A');
+    cell.classList.add('selected');
+    cell.appendChild(selectedEl);
 
     document.getElementById('sheets').appendChild(this.el);
   }
