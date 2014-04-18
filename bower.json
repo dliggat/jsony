@@ -23,6 +23,7 @@
   "devDependencies": {
     "almond": "~0.2.9",
     "requirejs": "~2.1.11",
-    "rsvp": "~3.0.6"
+    "rsvp": "~3.0.6",
+    "poly": "~0.6.0"
   }
 }

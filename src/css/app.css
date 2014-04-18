@@ -1,9 +1,64 @@
 html, body {
-  marigin: 0;
+  margin: 0;
   padding: 0;
+  height: 100%;
 }
 
 body {
   min-width: 320px;
   background-color: #EEE;
+  padding-top: 20px;
+  height: calc(100% - 20px);
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+body.loading #sheet {
+  visibility: hidden;
+  overflow: hidden;
+}
+
+#sheet {
+  width: 100%;
+  height: 100%;
+  background: white;
+  overflow: auto;
+  font-size: 11px;
+}
+
+#sheet .row {
+  position: relative;
+}
+
+#sheet #label-row {
+  position: relative;
+}
+
+#sheet #label-empty {
+  position: static;
+}
+
+#sheet .cell {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border: 1px solid #AAA;
+  border-width: 0 1px 1px 0;
+  box-sizing: border-box;
+}
+
+#sheet .cell-label {
+  line-height: 1.6em;
+  min-height: 1.6em;
+  background-color: #F8F8F8;
+  text-align: center;
+}
+
+#sheet .row .cell-label {
+  position: static;
+}
+
+#sheet .cell.selected {
+  z-index: 1;
+  border: 2px solid blue;
 }

@@ -1,35 +1,21 @@
-require.config({
-  shim: {
-    "rsvp": {
-      "exports": "RSVP"
-    }
-  },
-  paths: {
-    'rsvp': '/lib/bower/rsvp/rsvp'
-  },
-  // enforceDefine: true,
-  // packages: [
-  //   'rsvp',
-  //   {
-  //     name: 'rsvp',
-  //     location: '/lib/bower/rsvp',
-  //     main: 'rsvp.amd'
-  //   }
-  // ]
-});
-
 define(function(require) {
   var qs = require('querystring');
   var http = require('http');
+  var sheet = require('sheet');
 
   var url = qs.url;
 
-  new http.Request(url).get().then(function(data) {
-    console.log(data);
-  }).catch(function(status, text) {
-    console.error(status + ": Unable to fetch file at " + url);
-  });
+  if(url) {
+    document.body.className = 'loading';
 
-  console.log(qs);
+    new http.Request(url).get().then(function(data) {
+      document.body.className = '';
+      console.log(data);
+    }).catch(function(status, text) {
+      console.error(status + ": Unable to fetch file at " + url);
+    });
+  }
+
+  var container = document.getElementById('sheet');
+  container.appendChild(sheet.create());
 });
-
