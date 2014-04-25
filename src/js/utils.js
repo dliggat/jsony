@@ -7,19 +7,16 @@ define(function(require) {
     return val !== undefined && val !== null;
   }
 
+  function querySelector(selector) {
+    return document.querySelector(selector);
+  }
+
   function createElement(name, attrs, text) {
     var el = document.createElement(name);
 
     for(var attr in attrs) {
       var value = attrs[attr];
       if(isSomething(value)) {
-        switch(attr) {
-          case 'class':
-            if(Array.isArray(value)) {
-              value = value.filter(isSomething).join(' ');
-            }
-            break;
-        }
         el.setAttribute(attr, value);
       }
     }
@@ -54,8 +51,30 @@ define(function(require) {
     return sheet;
   }
 
+  function findAncestor(node, className) {
+    do {
+      if(node.classList.contains(className)) { return node; }
+    } while((node = node.parentNode));
+    return null;
+  }
+
+  function columnName(num) {
+    var name = '';
+
+    while(num > 0) {
+      var remainder = (num - 1) % 26;
+      name = String.fromCharCode(65 + remainder) + name;
+      num = parseInt((num - remainder) / 26, 10);
+    }
+
+    return name;
+  }
+
   return {
+    $: querySelector,
     createElement: createElement,
-    customStyleSheet: customStyleSheet
+    customStyleSheet: customStyleSheet,
+    findAncestor: findAncestor,
+    columnName: columnName
   };
 });

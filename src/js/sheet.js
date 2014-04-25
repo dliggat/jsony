@@ -1,24 +1,12 @@
 define(function(require) {
   var utils = require('utils');
+  var Cell = require('cell');
 
   var DEFAULTWIDTH = 100;
 
-  function columnName(num) {
-    num = +num;
-    var name = '';
-
-    while(num > 0) {
-      var remainder = (num - 1) % 26;
-      name = String.fromCharCode(65 + remainder) + name;
-      num = parseInt((num - remainder) / 26, 10);
-    }
-
-    return name;
-  }
-
   function createStyleSheet(id, numCols, widths) {
     var width = widths[0];
-    var left = width;
+    var left = width - 1;
 
     var rules = '#sheet-' + id + ' .cell.label-col {' +
         'left: 0; ' +
@@ -28,15 +16,39 @@ define(function(require) {
     for(var i = 1; i <= numCols; i++) {
       width = widths[i] || DEFAULTWIDTH;
       rules += '' +
-        '#sheet-' + id + ' .cell.col-' + columnName(i) + ' {' +
+        '#sheet-' + id + ' .cell.col-' + utils.columnName(i) + ' {' +
           'left: ' + left +  'px; ' +
           'width: ' + width +  'px;' +
         '}' +
         '\n';
-      left += width;
+      left += width - 1;
     }
 
     return utils.customStyleSheet(rules);
+  }
+
+  function createLabelRow(numCols) {
+    var labelRow = utils.createElement('div', { 'class': 'label-row' });
+
+    var emptyEl = createLabelCell('label-col label-empty');
+
+    labelRow.appendChild(emptyEl);
+
+    for(var i = 1; i <= numCols; i++) {
+      var name = utils.columnName(i);
+      var cell = createLabelCell('col-' + name, name);
+      var handle = utils.createElement('div', { 'class': 'handle' });
+      cell.appendChild(handle);
+      labelRow.appendChild(cell);
+    }
+
+    return labelRow;
+  }
+
+  function createLabelCell(className, text) {
+    return utils.createElement('div', {
+      'class': 'cell label ' + className
+    }, text);
   }
 
   var count = 0;
@@ -44,10 +56,43 @@ define(function(require) {
   function SpreadSheet() {
     // var stylesheet = css.sheet;
 
-    // TODO: compute rows cols that will fit in viewport
-
     this.id = count++;
 
+    this.cells = [];
+    // this.selection = [1, 1];
+
+    this.el = utils.createElement('div', {
+      id: 'sheet-' + this.id,
+      'class': 'sheet'
+    });
+
+    this.el.addEventListener('dblclick', function(e) {
+      var target = e.target;
+
+      var cellEl = utils.findAncestor(e.target, 'cell-data');
+
+      if(cellEl) {
+        var row = +cellEl.dataset.row;
+        var col = +cellEl.dataset.column;
+        this.cells[row - 1][col - 1].editMode();
+      }
+    }.bind(this), false);
+
+    this.el.addEventListener('click', function(e) {
+      var target = e.target;
+
+      var cellEl = utils.findAncestor(e.target, 'cell-data');
+
+      if(cellEl) {
+        var row = +cellEl.dataset.row;
+        var col = +cellEl.dataset.column;
+        this.currentCell.unSelect();
+        this.currentCell = this.cells[row - 1][col - 1];
+        this.currentCell.select();
+      }
+    }.bind(this), false);
+
+    // TODO: compute rows cols that will fit in viewport
     var numRows = 20, numCols = 15;
     var labels = {
       cols: {
@@ -58,71 +103,38 @@ define(function(require) {
       }
     };
 
-    var selected = [1,1];
-    var selectedEl = utils.createElement('div', { 'class': 'selected' });
-
     var styleEl = createStyleSheet(this.id, numCols, labels.cols.width);
     styleEl.id = 'spreadsheet-rules-' + this.id;
 
-    function createLabelRow() {
-      var labelRow = utils.createElement('div', { 'class': 'label-row' });
-
-      var emptyEl = createLabelCell('label-col label-empty');
-
-      labelRow.appendChild(emptyEl);
-
-      for(var i = 1; i <= numCols; i++) {
-        var name = columnName(i);
-        labelRow.appendChild(createLabelCell('col-' + name, name));
-      }
-
-      return labelRow;
-    }
-
-    function createLabelCell(className, text) {
-      return utils.createElement('div', {
-        'class': ['cell label ' + className]
-      }, text);
-    }
-
-    function createRow(num) {
+    var createRow = function createRow(num) {
       var row = utils.createElement('div', {
-        'class': 'row row-' + num
+        'class': 'row'
       });
 
       var label = createLabelCell('label-col', num);
       row.appendChild(label);
 
+      var cells = [];
       for(var i = 1; i <= numCols; i++) {
-        var cell = createCell(num, columnName(i));
-        row.appendChild(cell);
+        var cell = new Cell(num, i);
+        row.appendChild(cell.el);
+        cells.push(cell);
       }
+      this.cells.push(cells);
 
       return row;
-    }
+    }.bind(this);
 
-    function createCell(row, col) {
-      return utils.createElement('div', {
-        'class': ['cell', 'row-' + row, 'col-' + col]
-      });
-    }
-
-    this.el = utils.createElement('div', {
-      id: 'sheet-' + this.id,
-      'class': 'sheet'
-    });
-
-    this.el.appendChild(createLabelRow());
+    this.el.appendChild(createLabelRow(numCols));
 
     for(var j = 1; j <= numRows; j++) {
       this.el.appendChild(createRow(j));
     }
 
-    var cell = this.el.querySelector('.cell.row-1.col-A');
-    cell.classList.add('selected');
-    cell.appendChild(selectedEl);
+    this.currentCell = this.cells[0][0];
+    this.currentCell.select();
 
-    document.getElementById('sheets').appendChild(this.el);
+    utils.$('#sheets').appendChild(this.el);
   }
 
   SpreadSheet.prototype.show = function spreadSheetLoad() {

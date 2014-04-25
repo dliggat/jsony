@@ -7,15 +7,19 @@ html, body {
 body {
   min-width: 320px;
   background-color: #EEE;
-  padding-top: 20px;
-  height: calc(100% - 20px);
   overflow: hidden;
   font-family: Arial, sans-serif;
 }
 
+#toolbar {
+  height: 20px;
+  background-color: #EEE;
+  border-bottom: 1px solid #AAA;
+}
+
 #sheets {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 20px);
   background: white;
   overflow: auto;
   font-size: 11px;
@@ -29,32 +33,83 @@ body {
   position: relative;
 }
 
-.sheet .label-row {
-  position: relative;
-}
-
 .sheet .cell {
-  position: absolute;
-  top: 0;
   height: 100%;
   border: 1px solid #AAA;
-  border-width: 0 1px 1px 0;
   box-sizing: border-box;
-}
-
-.sheet .label-empty {
-  position: static;
 }
 
 .sheet .cell.label {
   line-height: 1.6em;
   min-height: 1.6em;
+  margin-top: -1px;
   background-color: #F8F8F8;
   text-align: center;
 }
 
+.sheet .label-row {
+  position: relative;
+}
+
+.sheet .label-row .cell.label {
+  border-top: 0;
+  margin-top: 0;
+  position: absolute;
+  top: 0;
+}
+
+.sheet .label-row .cell.label .handle {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  right: -3px;
+  width: 5px;
+  z-index: 1;
+  cursor: col-resize;
+}
+
+.sheet .label-row .cell.label .handle:hover {
+  background-color: blue;
+}
+
+.sheet .cell-data {
+  position: absolute;
+  top: 0;
+}
+
+.sheet .cell-data textarea {
+  display: none;
+  border: none;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  font-size: inherit;
+}
+
+.sheet .cell-data .view {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  font-family: monospace;
+  white-space: pre;
+}
+
+.sheet .cell-data.edit textarea {
+  display: block;
+}
+
+.sheet .cell-data.edit .view {
+  display: none;
+}
+
+.sheet .label-empty {
+  border-left: none;
+  position: static !important;
+}
 .sheet .row .cell.label {
-  position: static;
+  border-left: none;
 }
 
 .sheet .cell .selected {
